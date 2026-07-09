@@ -288,8 +288,8 @@ Evidências dos testes em `tst/` e monitores em `monitor/`.
   estoque item a item com pergunta por produto + refresh "registro pai". Homologada em
   base dev: preço, impostos, totais, reserva, confirmação de nota e os 4 cenários de estoque.
 - **v1.1 (atual)** — **seleção do Processo Produtivo (`IDPROC`)** no formulário: um PA pode
-  ter 2+ composições; validações de processo ativo, vínculo do PA e atividade única
-  (pendente teste em base dev).
+  ter 2+ composições; validações de processo ativo, vínculo do PA e atividade única.
+  Homologada em base dev (08/07/2026).
 
 ---
 
