@@ -1,7 +1,10 @@
 # Kit Composição — Preencher Itens por Composição de PA (Centrais de Pedido)
 
-> ⚠️ **EM ANDAMENTO** — homologado na base dev (08/07/2026). Pendente: reteste na base
-> teste do cliente (aguardando replicação da base de produção) e entrega técnica.
+> ⚠️ **EM ANDAMENTO** — homologado na base dev (08/07/2026). Reteste na base teste do
+> cliente **iniciado e bloqueado por ambiente**: evento de liberação de alçada dispara
+> envio de código por e-mail e a "Conta Padrão" de **Contas SMTP** da réplica está com
+> autenticação inválida (credencial de produção não vale na base teste). Pendente:
+> ajuste do SMTP (ou da exigência de código na liberação) na réplica → reteste → entrega técnica.
 
 Personalização Sankhya ERP: **Botão de Ação** na aba de Itens das Centrais de Pedido que
 permite escolher um **Produto Acabado (PA)** da Composição de Produto (módulo de Produção)
@@ -270,7 +273,13 @@ Evidências dos testes em `tst/` e monitores em `monitor/`.
 
 ## Próximos Passos
 
-- **Reteste na base teste do cliente** (aguardando replicação da base de produção):
+- **Desbloquear ambiente da réplica**: erro *"Houve erro no processo de envio de código de
+  liberação! ... Verifique a configuração da 'Conta Padrão' do cadastro 'Contas SMTP' ...
+  Envio de e-mail exige autenticação de usuário"* — corrigir credenciais da Conta Padrão
+  em Contas SMTP (ou apontar para SMTP de teste), ou rever a exigência de envio de código
+  no evento de liberação usado na base teste. A base do cliente tem **liberação de alçada**
+  ativa (a dev não tinha) — cenário novo a validar no reteste.
+- **Reteste na base teste do cliente**:
   - Conferir build Sankhya do cliente (dev = `4.35b491`; classes decompiladas e stubs
     assumem esse build)
   - Validar convivência com personalizações/regras da Central existentes do cliente
