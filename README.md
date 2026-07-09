@@ -66,12 +66,14 @@ src/main/java/br/com/evolution/kitcomposicao/
 ├── service/
 │   └── PreencherItensService.java           Caso de uso (composição → validação → inclusão)
 ├── repository/
-│   ├── ComposicaoProdutoRepository.java     MPs do PA (TPRLMP⋈TPRATV⋈TPRPRC, maior VERSAO)
+│   ├── ComposicaoProdutoRepository.java     MPs do PA no processo (TPRLMP⋈TPRATV⋈TPRPRC, maior VERSAO)
+│   ├── ProcessoProdutivoRepository.java     TPRPRC: ativo + qtd atividades + vínculo do PA
 │   ├── ItemNotaNativoRepository.java        CACHelper rota XML + bypass de efetivação
 │   ├── PedidoRepository.java                TGFCAB⋈TGFTOP (regra de estoque da TOP do pedido)
 │   └── ProdutoRepository.java               TGFPRO.USOPROD
 ├── domain/
 │   ├── ComposicaoPA.java                    Regra pura: gera itens com qtd multiplicada
+│   ├── ProcessoProdutivo.java               Validações do processo escolhido (ativo/vínculo/1 atividade)
 │   ├── ItemComposicao.java                  VO (CODPRODMP + QTDMISTURA)
 │   ├── ItemPedido.java                      VO (CODPROD + QTDNEG)
 │   ├── RegraEstoquePedido.java              Gate de validação (espelho do nativo)
@@ -108,6 +110,17 @@ Cadastro em **Dicionário de Dados → TGFITE (ItemNota) → Ações**, tipo **R
 | Local Origem | `CODLOCALORIG` | Pesquisa (Local) | Sim |
 | Quantidade | `QTDNEG` | Número decimal | Sim |
 | Listar PA? | `LISTAPA` | Verdadeiro/Falso | Não |
+| Processo Produtivo | `IDPROC` | Pesquisa (Processo) | Sim |
+
+**Validações do Processo Produtivo** (um PA pode ter 2+ composições — o processo escolhido
+resolve a ambiguidade), na ordem:
+
+0. `TPRPRC.ATIVO='S'` — senão: *"O processo produtivo X não está ativo."*
+1. PA com MPs vinculadas ao processo — senão: *"O item (PA) não possui vínculo com o
+   processo produtivo escolhido."*
+2. Processo com **uma única atividade** (TPRATV) — senão bloqueia: *"...Esta busca permite
+   apenas processos com uma atividade configurada e que contenham MPs vinculadas."*
+3. Composição sempre na **versão mais recente** (`ROW_NUMBER ... ORDER BY TPRPRC.VERSAO DESC`).
 
 > **"Depois de executar, recarregar": `o registro pai (quando existir)`** — obrigatório.
 > Recarrega a nota inteira (itens + totais). "Toda a grade" atualiza só a grade de itens
@@ -271,9 +284,12 @@ Evidências dos testes em `tst/` e monitores em `monitor/`.
 
 - **v0.1** — inserção via JAPE (`ctx.novaLinha`): preço zero, reserva errada (ORA-20101)
 - **v0.2** — preço via `CentralItemNota.inicializaProduto` (preço OK; demais campos ainda fora)
-- **v1.0 (atual)** — **inclusão 100% nativa** via `CACHelper` rota XML + validação de
+- **v1.0** — **inclusão 100% nativa** via `CACHelper` rota XML + validação de
   estoque item a item com pergunta por produto + refresh "registro pai". Homologada em
   base dev: preço, impostos, totais, reserva, confirmação de nota e os 4 cenários de estoque.
+- **v1.1 (atual)** — **seleção do Processo Produtivo (`IDPROC`)** no formulário: um PA pode
+  ter 2+ composições; validações de processo ativo, vínculo do PA e atividade única
+  (pendente teste em base dev).
 
 ---
 

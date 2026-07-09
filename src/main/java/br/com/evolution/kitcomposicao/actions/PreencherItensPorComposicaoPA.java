@@ -33,6 +33,7 @@ public class PreencherItensPorComposicaoPA implements AcaoRotinaJava {
             BigDecimal codLocalOrig = ParamUtil.getBigDecimalObrigatorio(ctx, "CODLOCALORIG", "Local Origem");
             BigDecimal qtdDigitada  = ParamUtil.getBigDecimalObrigatorio(ctx, "QTDNEG", "Quantidade");
             boolean listarPA        = ParamUtil.getBooleanOpcional(ctx, "LISTAPA");
+            BigDecimal idProc       = ParamUtil.getBigDecimalObrigatorio(ctx, "IDPROC", "Processo Produtivo");
 
             if (qtdDigitada.signum() <= 0) {
                 ctx.mostraErro("Atenção! A Quantidade deve ser maior que zero.");
@@ -40,10 +41,10 @@ public class PreencherItensPorComposicaoPA implements AcaoRotinaJava {
             }
 
             ResultadoInclusao resultado = new PreencherItensService()
-                .executar(ctx, nunota, codProdPA, codLocalOrig, qtdDigitada, listarPA);
+                .executar(ctx, nunota, codProdPA, codLocalOrig, qtdDigitada, listarPA, idProc);
 
             TLogCatcher.logInfo("NUNOTA=" + nunota + " PA=" + codProdPA
-                + " QTD=" + qtdDigitada + " LISTAPA=" + listarPA
+                + " QTD=" + qtdDigitada + " LISTAPA=" + listarPA + " IDPROC=" + idProc
                 + " -> " + resultado.getIncluidos() + " item(ns) inserido(s), "
                 + resultado.getPulados() + " pulado(s) por estoque.");
 

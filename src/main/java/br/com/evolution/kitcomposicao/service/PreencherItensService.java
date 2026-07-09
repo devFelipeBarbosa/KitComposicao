@@ -3,9 +3,11 @@ package br.com.evolution.kitcomposicao.service;
 import br.com.evolution.kitcomposicao.domain.ComposicaoPA;
 import br.com.evolution.kitcomposicao.domain.ItemComposicao;
 import br.com.evolution.kitcomposicao.domain.ItemPedido;
+import br.com.evolution.kitcomposicao.domain.ProcessoProdutivo;
 import br.com.evolution.kitcomposicao.domain.RegraEstoquePedido;
 import br.com.evolution.kitcomposicao.domain.ResultadoInclusao;
 import br.com.evolution.kitcomposicao.repository.ComposicaoProdutoRepository;
+import br.com.evolution.kitcomposicao.repository.ProcessoProdutivoRepository;
 import br.com.evolution.kitcomposicao.repository.ItemNotaNativoRepository;
 import br.com.evolution.kitcomposicao.repository.PedidoRepository;
 import br.com.evolution.kitcomposicao.repository.ProdutoRepository;
@@ -34,10 +36,15 @@ public class PreencherItensService {
                                       BigDecimal codProdPA,
                                       BigDecimal codLocalOrig,
                                       BigDecimal qtdDigitada,
-                                      boolean listarPA) throws Exception {
+                                      boolean listarPA,
+                                      BigDecimal idProc) throws Exception {
+
+        ProcessoProdutivo processo =
+            ProcessoProdutivoRepository.buscar(ctx.getQuery(), idProc, codProdPA);
+        processo.validarParaBuscaDeComposicao();
 
         List<ItemComposicao> materiasPrimas =
-            ComposicaoProdutoRepository.buscarMateriasPrimas(ctx.getQuery(), codProdPA);
+            ComposicaoProdutoRepository.buscarMateriasPrimas(ctx.getQuery(), codProdPA, idProc);
 
         if (materiasPrimas.isEmpty()) {
             throw new Exception(ERRO_PA_SEM_COMPOSICAO);
